@@ -2,6 +2,12 @@
 
 set -ouex pipefail
 
+# Customize OS name for GRUB boot menu
+sed -i 's/^PRETTY_NAME=.*/PRETTY_NAME="Bluefin-GDX DOCA"/' /usr/lib/os-release
+# Also update /etc/os-release if it exists as a regular file
+if [ -f /etc/os-release ] && [ ! -L /etc/os-release ]; then
+    sed -i 's/^PRETTY_NAME=.*/PRETTY_NAME="Bluefin-GDX DOCA"/' /etc/os-release
+fi
 ### Install packages
 
 # Packages can be installed from any enabled yum repo on the image.
@@ -10,7 +16,7 @@ set -ouex pipefail
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/39/x86_64/repoview/index.html&protocol=https&redirect=1
 
 # this installs a package from fedora repos
-dnf5 install -y tmux 
+#dnf5 install -y tmux 
 
 # Use a COPR Example:
 #
@@ -22,3 +28,23 @@ dnf5 install -y tmux
 #### Example for enabling a System Unit File
 
 systemctl enable podman.socket
+
+# Enable VPN services
+systemctl enable tailscaled.service
+
+# Add NVIDIA DOCA repository for RHEL 10
+curl -o /etc/yum.repos.d/doca.repo https://linux.mellanox.com/public/repo/doca/latest/rhel10.0/x86_64/doca.repo
+
+# Add Mellanox OFED repository for RDMA drivers
+curl -o /etc/yum.repos.d/mlnx_ofed.repo https://linux.mellanox.com/public/repo/mlnx_ofed/latest/rhel10.0/x86_64/mlnx_ofed.repo
+
+rpm-ostree install \
+    doca-all \
+    doca-roce \
+    rivermax \
+    rivermax-utils \
+    mft \
+    rdma-core \
+    libibverbs \
+    librdmacm \
+    perftest

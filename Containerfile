@@ -2,8 +2,8 @@
 FROM scratch AS ctx
 COPY build_files /
 
-# Base Image
-FROM ghcr.io/ublue-os/bazzite:stable
+# Base Image (CentOS Stream 10-based LTS)
+FROM ghcr.io/ublue-os/bluefin-gdx:lts
 
 ## Other possible base images include:
 # FROM ghcr.io/ublue-os/bazzite:latest
