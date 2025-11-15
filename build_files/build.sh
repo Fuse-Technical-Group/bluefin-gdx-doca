@@ -32,11 +32,14 @@ systemctl enable podman.socket
 # Enable VPN services
 systemctl enable tailscaled.service
 
-# Add NVIDIA DOCA repository for RHEL 10
-curl -o /etc/yum.repos.d/doca.repo https://linux.mellanox.com/public/repo/doca/latest/rhel10.0/x86_64/doca.repo
-
-# Add Mellanox OFED repository for RDMA drivers
-curl -o /etc/yum.repos.d/mlnx_ofed.repo https://linux.mellanox.com/public/repo/mlnx_ofed/latest/rhel10.0/x86_64/mlnx_ofed.repo
+# Create NVIDIA DOCA repository configuration for RHEL 10
+cat > /etc/yum.repos.d/doca.repo << 'EOF'
+[doca]
+name=NVIDIA DOCA for RHEL 10
+baseurl=https://linux.mellanox.com/public/repo/doca/latest/rhel10.0/x86_64/
+enabled=1
+gpgcheck=0
+EOF
 
 rpm-ostree install \
     doca-all \
